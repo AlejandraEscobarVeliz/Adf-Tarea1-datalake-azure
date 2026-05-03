@@ -1,0 +1,130 @@
+{
+	"name": "Df_ventas_online_bronze_silver",
+	"properties": {
+		"folder": {
+			"name": "Bronze"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Ventas_online_csv",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Ventas_scz_limpio_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "select1"
+				},
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "derivedColumn2"
+				},
+				{
+					"name": "derivedColumn3"
+				},
+				{
+					"name": "derivedColumn4"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          order_id as string,",
+				"          timestamp as string,",
+				"          product as string,",
+				"          qty as string,",
+				"          unit_price as string,",
+				"          {customer/name} as string,",
+				"          {customer/email} as string,",
+				"          {customer/city} as string,",
+				"          payment_method as string,",
+				"          status as string,",
+				"          shipping_cost as string,",
+				"          channel as string,",
+				"          customer as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> source1",
+				"source1 select(mapColumn(",
+				"          order_id,",
+				"          timestamp,",
+				"          product,",
+				"          qty,",
+				"          unit_price,",
+				"          {customer/name},",
+				"          {customer/email},",
+				"          {customer/city},",
+				"          payment_method,",
+				"          status,",
+				"          shipping_cost,",
+				"          channel,",
+				"          customer",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 derive(order_id = trim(order_id),",
+				"          timestamp = trim(timestamp),",
+				"          product = trim(product),",
+				"          qty = trim(qty),",
+				"          unit_price = trim(unit_price),",
+				"          {customer/name} = trim({customer/name}),",
+				"          {customer/email} = trim({customer/email}),",
+				"          {customer/city} = trim({customer/city}),",
+				"          payment_method = trim(payment_method),",
+				"          status = trim(status),",
+				"          shipping_cost = trim(shipping_cost),",
+				"          channel = trim(status),",
+				"          customer = trim(customer)) ~> derivedColumn1",
+				"derivedColumn1 derive(canal = 'online',",
+				"          {customer/city} = iif(\r",
+				"    in(['SCZ','Santa Cruz','santa cruz','SANTA CRUZ','Sta. Cruz','SC','santa_cruz'],toString(byName('customer/city'))),'Santa Cruz',\r",
+				"iif(\r",
+				"    in(['LPZ','La Paz','LP','la paz','LA PAZ','Lapaz','L.P.'],toString(byName('customer/city'))),'La Paz',\r",
+				"iif(\r",
+				"    in(['CBBA','Cbba','Cochabamba','cochabamba','COCHABAMBA','cbba'],toString(byName('customer/city'))),'Cochabamba',\r",
+				"toString(byName('customer/city')))))) ~> derivedColumn2",
+				"derivedColumn2 derive(timestamp = coalesce(\r",
+				"toDate(timestamp,'yyyy-MM-dd'),\r",
+				"toDate(timestamp,\"yyyy-MM-dd'T'HH:mm:ss\"),\r",
+				"toDate(timestamp,'dd/MM/yyyy'),\r",
+				"toDate(timestamp,'yyyy/MM/dd'),\r",
+				"toDate(timestamp,'dd-MM-yyyy'),\r",
+				"toDate(timestamp,'dd/MMM/yyyy'),\r",
+				"toDate(timestamp,'dd-MMM-yyyy'),\r",
+				"toDate(timestamp,\"dd 'de' MMMM 'de' yyyy\"),\r",
+				"toDate(timestamp,'MMMM dd, yyyy'))) ~> derivedColumn3",
+				"derivedColumn3 derive(qty = toInteger(qty),",
+				"          unit_price = toFloat(regexReplace(toString(unit_price), '[^0-9.]', '')),",
+				"          product = initCap(trim(regexReplace(product, '\\\\s+', ' ')))) ~> derivedColumn4",
+				"derivedColumn4 filter(qty>0 && !isNull(unit_price) && !isNull(timestamp)) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ventas_online_limpio.csv'],",
+				"     umask: 0022,",
+				"     preCommands: [],",
+				"     postCommands: [],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink1"
+			]
+		}
+	}
+}
