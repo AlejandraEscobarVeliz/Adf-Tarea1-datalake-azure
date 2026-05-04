@@ -94,7 +94,7 @@
 				"          sucursal,",
 				"          vendedor,",
 				"          cliente_nombre,",
-				"          cliente_email,",
+				"          cliente_email = source1@cliente_email,",
 				"          metodo_pago",
 				"     ),",
 				"     skipDuplicateMapInputs: true,",
