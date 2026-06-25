@@ -1,0 +1,61 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "boletas",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaBoletas"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_sup_boletas",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSilverBoletas"
+				}
+			],
+			"transformations": [
+				{
+					"name": "limpiarCIpaso1"
+				},
+				{
+					"name": "limpiarCIpaso2"
+				},
+				{
+					"name": "marcarCIIncompleto"
+				},
+				{
+					"name": "limpiarEstado"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          boleta_id as string,",
+				"          control_id as string,",
+				"          ci_beneficiaria as string,",
+				"          nro_boleta as string,",
+				"          fecha_emision as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaBoletas",
+				"limpiezaBoletas derive(ci_paso1 = upper(trim(replace(replace(ci_beneficiaria, '-', ''), ' ', '')))) ~> limpiarCIpaso1",
+				"limpiarCIpaso1 derive(ci_beneficiario_limpio = iif(regexMatch(ci_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_paso1, '([0-9]+)'), regexExtract(ci_paso1, '^([A-Z]{2})')), ci_paso1)) ~> limpiarCIpaso2",
+				"limpiarCIpaso2 derive(ci_calidad = iif(regexMatch(ci_beneficiario_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
+				"marcarCIIncompleto derive(estado = upper(trim(estado))) ~> limpiarEstado",
+				"limpiarEstado sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkSilverBoletas"
+			]
+		}
+	}
+}

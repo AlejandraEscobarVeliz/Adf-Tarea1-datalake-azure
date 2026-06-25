@@ -1,0 +1,24 @@
+{
+	"name": "silver_sup_boletas",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_stsubsidiosbja2026",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "boletas_limpio.csv",
+				"folderPath": "SUP",
+				"container": "silver"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}

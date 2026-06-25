@@ -1,5 +1,5 @@
 {
-	"name": "DelimitedText1",
+	"name": "segip_personas",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_stsubsidiosbja2026",
