@@ -1,0 +1,66 @@
+{
+	"name": "limpieza_sup_entregas",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "entregas",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaEntregas"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_sup_entregas",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSilverEntregas"
+				}
+			],
+			"transformations": [
+				{
+					"name": "limpiarCIpaso1"
+				},
+				{
+					"name": "limpiarCIpaso2"
+				},
+				{
+					"name": "marcarCIIncompleto"
+				},
+				{
+					"name": "limpiarNulos"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          entrega_id as string,",
+				"          boleta_id as string,",
+				"          ci_beneficiaria as string,",
+				"          establecimiento_id as string,",
+				"          paquete_id as string,",
+				"          paquete_nombre as string,",
+				"          fecha_entrega as string,",
+				"          lote_produccion as string,",
+				"          peso_paquete_kg as string,",
+				"          fecha_proxima_entrega as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaEntregas",
+				"limpiezaEntregas derive(ci_paso1 = upper(trim(replace(replace(ci_beneficiaria, '-', ''), ' ', '')))) ~> limpiarCIpaso1",
+				"limpiarCIpaso1 derive(ci_beneficiaria_limpio = iif(regexMatch(ci_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_paso1, '([0-9]+)'), regexExtract(ci_paso1, '^([A-Z]{2})')), ci_paso1)) ~> limpiarCIpaso2",
+				"limpiarCIpaso2 derive(ci_calidad = iif(regexMatch(ci_beneficiaria_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
+				"marcarCIIncompleto derive(lote_produccion_limpio = iif(isNull(lote_produccion) || length(trim(toString(lote_produccion))) == 0, 'NO_REGISTRADO', lote_produccion),",
+				"          peso_paquete_kg_calidad = iif(isNull(peso_paquete_kg), 'SIN_PESO_REGISTRADO', 'OK')) ~> limpiarNulos",
+				"limpiarNulos sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkSilverEntregas"
+			]
+		}
+	}
+}
