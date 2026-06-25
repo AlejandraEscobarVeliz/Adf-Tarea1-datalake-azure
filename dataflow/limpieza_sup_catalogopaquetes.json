@@ -1,0 +1,43 @@
+{
+	"name": "limpieza_sup_catalogopaquetes",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "sup_catalogopaquetes",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaCatalogo"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_sup_catalogopaquetes",
+						"type": "DatasetReference"
+					},
+					"name": "silversupcatalogopaquetes"
+				}
+			],
+			"transformations": [],
+			"scriptLines": [
+				"source(output(",
+				"          paquete_id as string,",
+				"          nombre as string,",
+				"          contenido as string,",
+				"          peso_estandar_kg as string,",
+				"          costo_estimado_bs as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaCatalogo",
+				"limpiezaCatalogo sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> silversupcatalogopaquetes"
+			]
+		}
+	}
+}

@@ -1,0 +1,63 @@
+{
+	"name": "limpieza_bja_pagos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bja_pagos",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaPagos"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_bja_pagos",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSilverPagos"
+				}
+			],
+			"transformations": [
+				{
+					"name": "limpiarCIpaso1"
+				},
+				{
+					"name": "limpiarCIpaso2"
+				},
+				{
+					"name": "marcarCIIncompleto"
+				},
+				{
+					"name": "limpiarEstadoPago"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          pago_id as string,",
+				"          ci_beneficiaria as string,",
+				"          concepto_pago as string,",
+				"          monto_bs as string,",
+				"          fecha_pago as string,",
+				"          estado_pago as string,",
+				"          canal_pago as string,",
+				"          nro_comprobante as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaPagos",
+				"limpiezaPagos derive(ci_paso1 = upper(trim(replace(replace(ci_beneficiaria, '-', ''), ' ', '')))) ~> limpiarCIpaso1",
+				"limpiarCIpaso1 derive(ci_beneficiaria_limpio = iif(regexMatch(ci_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_paso1, '([0-9]+)'), regexExtract(ci_paso1, '^([A-Z]{2})')), ci_paso1)) ~> limpiarCIpaso2",
+				"limpiarCIpaso2 derive(ci_calidad = iif(regexMatch(ci_beneficiaria_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
+				"marcarCIIncompleto derive(estado_pago = upper(trim(estado_pago))) ~> limpiarEstadoPago",
+				"limpiarEstadoPago sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkSilverPagos"
+			]
+		}
+	}
+}

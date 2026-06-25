@@ -1,0 +1,52 @@
+{
+	"name": "limpieza_sup_establecimientos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "sup_establecimientos",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaEstablecimientosSUP"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_sup_establecimientos",
+						"type": "DatasetReference"
+					},
+					"name": "silversupestablecimientos"
+				}
+			],
+			"transformations": [
+				{
+					"name": "limpiarEstado"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          establecimiento_id as string,",
+				"          codigo_snis as string,",
+				"          nombre as string,",
+				"          tipo as string,",
+				"          nivel_atencion as string,",
+				"          municipio as string,",
+				"          departamento as string,",
+				"          red_salud as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaEstablecimientosSUP",
+				"limpiezaEstablecimientosSUP derive(estado = upper(trim(estado))) ~> limpiarEstado",
+				"limpiarEstado sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> silversupestablecimientos"
+			]
+		}
+	}
+}

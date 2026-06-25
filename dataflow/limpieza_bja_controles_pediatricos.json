@@ -1,0 +1,64 @@
+{
+	"name": "limpieza_bja_controles_pediatricos",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bja_controles_pediatricos",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaControlesPediatricos"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_bja_controles_pediatricos",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSilverControlesPediatricos"
+				}
+			],
+			"transformations": [
+				{
+					"name": "limpiarCINinoPaso1"
+				},
+				{
+					"name": "limpiarCIpaso2"
+				},
+				{
+					"name": "marcarCIIncompleto"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          control_pediatrico_id as string,",
+				"          ci_nino as string,",
+				"          ci_madre as string,",
+				"          establecimiento_id as string,",
+				"          nro_control as string,",
+				"          fecha_control as string,",
+				"          peso_nino_kg as string,",
+				"          talla_nino_cm as string,",
+				"          vacuna_aplicada as string,",
+				"          resultado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaControlesPediatricos",
+				"limpiezaControlesPediatricos derive(ci_nino_paso1 = upper(trim(replace(replace(ci_nino, '-', ''), ' ', ''))),",
+				"          ci_madre_paso1 = upper(trim(replace(replace(ci_madre, '-', ''), ' ', '')))) ~> limpiarCINinoPaso1",
+				"limpiarCINinoPaso1 derive(ci_nino_limpio = iif(regexMatch(ci_nino_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_nino_paso1, '([0-9]+)'), regexExtract(ci_nino_paso1, '^([A-Z]{2})')), ci_nino_paso1),",
+				"          ci_madre_limpio = iif(regexMatch(ci_madre_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_madre_paso1, '([0-9]+)'), regexExtract(ci_madre_paso1, '^([A-Z]{2})')), ci_madre_paso1)) ~> limpiarCIpaso2",
+				"limpiarCIpaso2 derive(ci_nino_calidad = iif(regexMatch(ci_nino_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK'),",
+				"          ci_madre_calidad = iif(regexMatch(ci_madre_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
+				"marcarCIIncompleto sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkSilverControlesPediatricos"
+			]
+		}
+	}
+}

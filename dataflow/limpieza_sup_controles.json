@@ -1,0 +1,59 @@
+{
+	"name": "limpieza_sup_controles",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "sup_controles",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaControlesSup"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_sup_controles",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSilverControlesSup"
+				}
+			],
+			"transformations": [
+				{
+					"name": "limpiarCIpaso1"
+				},
+				{
+					"name": "limpiarCIpaso2"
+				},
+				{
+					"name": "marcarCIIncompleto"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          control_id as string,",
+				"          ci_beneficiaria as string,",
+				"          establecimiento_id as string,",
+				"          nro_control as string,",
+				"          fecha_control as string,",
+				"          semana_gestacion as string,",
+				"          peso_madre_kg as string,",
+				"          presion_arterial as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaControlesSup",
+				"limpiezaControlesSup derive(ci_paso1 = upper(trim(replace(replace(ci_beneficiaria, '-', ''), ' ', '')))) ~> limpiarCIpaso1",
+				"limpiarCIpaso1 derive(ci_beneficiaria_limpio = iif(regexMatch(ci_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_paso1, '([0-9]+)'), regexExtract(ci_paso1, '^([A-Z]{2})')), ci_paso1)) ~> limpiarCIpaso2",
+				"limpiarCIpaso2 derive(ci_calidad = iif(regexMatch(ci_beneficiaria_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
+				"marcarCIIncompleto sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkSilverControlesSup"
+			]
+		}
+	}
+}

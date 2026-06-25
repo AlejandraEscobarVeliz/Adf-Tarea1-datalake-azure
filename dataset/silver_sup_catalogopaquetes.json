@@ -1,0 +1,24 @@
+{
+	"name": "silver_sup_catalogopaquetes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_stsubsidiosbja2026",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "DelimitedText",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "catalogopaquetes_limpio.csv",
+				"folderPath": "SUP",
+				"container": "silver"
+			},
+			"columnDelimiter": ",",
+			"escapeChar": "\\",
+			"firstRowAsHeader": true,
+			"quoteChar": "\""
+		},
+		"schema": []
+	}
+}
