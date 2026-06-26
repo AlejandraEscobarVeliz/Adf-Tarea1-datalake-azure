@@ -38,8 +38,11 @@
 				"     ignoreNoFilesFound: false) ~> limpiezaCatalogo",
 				"limpiezaCatalogo sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['catalogopaquetes_limpio.csv'],",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> silversupcatalogopaquetes"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> silversupcatalogopaquetes"
 			]
 		}
 	}
