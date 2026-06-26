@@ -58,7 +58,6 @@
 				"marcarCIIncompleto sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['partos_limpio.csv'],",
-				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sinkSilverPartos"

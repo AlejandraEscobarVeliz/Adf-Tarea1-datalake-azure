@@ -54,7 +54,6 @@
 				"marcarCIyEstado sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['inscripciones_limpio.csv'],",
-				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sinkSilverInscripcionesBJA"

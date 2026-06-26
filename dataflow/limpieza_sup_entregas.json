@@ -62,7 +62,6 @@
 				"limpiarNulos sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['entregas_limpio.csv'],",
-				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sinkSilverEntregas"

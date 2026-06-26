@@ -55,7 +55,6 @@
 				"marcarCIIncompleto sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     partitionFileNames:['controles_limpio.csv'],",
-				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
 				"     partitionBy('hash', 1)) ~> sinkSilverControlesSup"
