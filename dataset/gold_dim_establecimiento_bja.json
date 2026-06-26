@@ -1,0 +1,16 @@
+{
+	"name": "gold_dim_establecimiento_bja",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_dw_subsidios_gold",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "dim_establecimiento_bja"
+		}
+	}
+}
