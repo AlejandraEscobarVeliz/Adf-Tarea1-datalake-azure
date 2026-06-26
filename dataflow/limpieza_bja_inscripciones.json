@@ -1,6 +1,9 @@
 {
 	"name": "limpieza_bja_inscripciones",
 	"properties": {
+		"folder": {
+			"name": "BJA"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
@@ -12,10 +15,24 @@
 					"name": "limpiezaInscripcionesBJA"
 				}
 			],
-			"sinks": [],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_bja_inscripciones",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSilverInscripcionesBJA"
+				}
+			],
 			"transformations": [
 				{
 					"name": "limpiarCIpaso1"
+				},
+				{
+					"name": "limpiarCIpaso2"
+				},
+				{
+					"name": "marcarCIyEstado"
 				}
 			],
 			"scriptLines": [
@@ -30,7 +47,14 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false) ~> limpiezaInscripcionesBJA",
-				"limpiezaInscripcionesBJA derive() ~> limpiarCIpaso1"
+				"limpiezaInscripcionesBJA derive(ci_paso1 = upper(trim(replace(replace(ci_beneficiaria, '-', ''), ' ', '')))) ~> limpiarCIpaso1",
+				"limpiarCIpaso1 derive(ci_beneficiaria_limpio = iif(regexMatch(ci_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_paso1, '([0-9]+)'), regexExtract(ci_paso1, '^([A-Z]{2})')), ci_paso1)) ~> limpiarCIpaso2",
+				"limpiarCIpaso2 derive(ci_calidad = iif(regexMatch(ci_beneficiaria_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK'),",
+				"          estado = upper(trim(estado))) ~> marcarCIyEstado",
+				"marcarCIyEstado sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkSilverInscripcionesBJA"
 			]
 		}
 	}

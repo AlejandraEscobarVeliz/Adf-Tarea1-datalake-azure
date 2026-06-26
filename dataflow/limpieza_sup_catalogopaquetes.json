@@ -1,6 +1,9 @@
 {
 	"name": "limpieza_sup_catalogopaquetes",
 	"properties": {
+		"folder": {
+			"name": "SUP"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

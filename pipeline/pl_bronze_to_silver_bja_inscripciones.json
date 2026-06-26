@@ -1,5 +1,5 @@
 {
-	"name": "pl_bronze_to_silver_sup",
+	"name": "pl_bronze_to_silver_bja_inscripciones",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "boletas",
+						"referenceName": "limpieza_bja_inscripciones",
 						"type": "DataFlowReference"
 					},
 					"compute": {
@@ -28,7 +28,7 @@
 			}
 		],
 		"folder": {
-			"name": "SUP"
+			"name": "BJA"
 		},
 		"annotations": []
 	}

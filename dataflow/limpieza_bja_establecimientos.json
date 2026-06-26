@@ -1,6 +1,9 @@
 {
 	"name": "limpieza_bja_establecimientos",
 	"properties": {
+		"folder": {
+			"name": "BJA"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

@@ -1,5 +1,5 @@
 {
-	"name": "pl_bronze_to_silver_sup",
+	"name": "pl_bronze_to_silver_sup_inscripciones",
 	"properties": {
 		"activities": [
 			{
@@ -16,7 +16,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "boletas",
+						"referenceName": "limpieza_sup_inscripciones",
 						"type": "DataFlowReference"
 					},
 					"compute": {

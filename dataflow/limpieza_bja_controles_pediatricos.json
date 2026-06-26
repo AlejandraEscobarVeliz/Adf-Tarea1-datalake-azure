@@ -1,6 +1,9 @@
 {
 	"name": "limpieza_bja_controles_pediatricos",
 	"properties": {
+		"folder": {
+			"name": "BJA"
+		},
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [

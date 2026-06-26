@@ -1,0 +1,65 @@
+{
+	"name": "limpieza_bja_partos",
+	"properties": {
+		"folder": {
+			"name": "BJA"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bja_partos",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaPartos"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "silver_bja_partos",
+						"type": "DatasetReference"
+					},
+					"name": "sinkSilverPartos"
+				}
+			],
+			"transformations": [
+				{
+					"name": "limpiarCIpaso1"
+				},
+				{
+					"name": "limpiarCIpaso2"
+				},
+				{
+					"name": "marcarCIIncompleto"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          parto_id as string,",
+				"          ci_madre as string,",
+				"          ci_recien_nacido as string,",
+				"          establecimiento_id as string,",
+				"          fecha_parto as string,",
+				"          tipo_parto as string,",
+				"          peso_nacimiento_kg as string,",
+				"          talla_nacimiento_cm as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaPartos",
+				"limpiezaPartos derive(ci_madre_paso1 = upper(trim(replace(replace(ci_madre, '-', ''), ' ', ''))),",
+				"          ci_recien_nacido_paso1 = upper(trim(replace(replace(ci_recien_nacido, '-', ''), ' ', '')))) ~> limpiarCIpaso1",
+				"limpiarCIpaso1 derive(ci_madre_limpio = iif(regexMatch(ci_madre_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_madre_paso1, '([0-9]+)'), regexExtract(ci_madre_paso1, '^([A-Z]{2})')), ci_madre_paso1),",
+				"          ci_recien_nacido_limpio = iif(regexMatch(ci_recien_nacido_paso1, '^[A-Z]{2}[0-9]+$'), concat(regexExtract(ci_recien_nacido_paso1, '([0-9]+)'), regexExtract(ci_recien_nacido_paso1, '^([A-Z]{2})')), ci_recien_nacido_paso1)) ~> limpiarCIpaso2",
+				"limpiarCIpaso2 derive(ci_madre_calidad = iif(regexMatch(ci_madre_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK'),",
+				"          ci_recien_nacido_calidad = iif(regexMatch(ci_recien_nacido_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
+				"marcarCIIncompleto sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sinkSilverPartos"
+			]
+		}
+	}
+}
