@@ -53,8 +53,11 @@
 				"          estado = upper(trim(estado))) ~> marcarCIyEstado",
 				"marcarCIyEstado sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['inscripciones_limpio.csv'],",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sinkSilverInscripcionesSUP"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSilverInscripcionesSUP"
 			]
 		}
 	}
