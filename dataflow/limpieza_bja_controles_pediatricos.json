@@ -59,8 +59,11 @@
 				"          ci_madre_calidad = iif(regexMatch(ci_madre_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
 				"marcarCIIncompleto sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['controles_pediatricos_limpio.csv'],",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sinkSilverControlesPediatricos"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSilverControlesPediatricos"
 			]
 		}
 	}
