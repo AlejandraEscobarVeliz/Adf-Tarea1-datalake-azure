@@ -57,8 +57,11 @@
 				"          ci_recien_nacido_calidad = iif(regexMatch(ci_recien_nacido_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
 				"marcarCIIncompleto sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['partos_limpio.csv'],",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sinkSilverPartos"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSilverPartos"
 			]
 		}
 	}
