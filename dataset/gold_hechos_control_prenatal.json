@@ -1,0 +1,16 @@
+{
+	"name": "gold_hechos_control_prenatal",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_dw_subsidios_gold",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "hechos_control_prenatal"
+		}
+	}
+}

@@ -13,7 +13,7 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "controles_prenatales_limpio.csv/",
+				"fileName": "controles_prenatales_limpio.csv",
 				"folderPath": "BJA",
 				"container": "silver"
 			},
