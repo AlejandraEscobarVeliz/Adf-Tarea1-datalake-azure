@@ -1,0 +1,18 @@
+{
+	"name": "gold_dim_persona",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_dw_subsidios_gold",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "Golden"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dim_persona"
+		}
+	}
+}
