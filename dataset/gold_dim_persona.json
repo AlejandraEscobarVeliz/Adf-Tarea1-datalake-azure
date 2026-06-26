@@ -12,7 +12,8 @@
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "dim_persona"
+			"schema": "dbo",
+			"table": "dim_persona"
 		}
 	}
 }
