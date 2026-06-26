@@ -54,8 +54,11 @@
 				"limpiarCIpaso2 derive(ci_calidad = iif(regexMatch(ci_beneficiaria_limpio, '^[0-9]+$'), 'INCOMPLETO_SIN_DEPTO', 'OK')) ~> marcarCIIncompleto",
 				"marcarCIIncompleto sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['controles_limpio.csv'],",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sinkSilverControlesSup"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSilverControlesSup"
 			]
 		}
 	}
