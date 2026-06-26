@@ -58,8 +58,10 @@
 				"marcarCIIncompleto derive(estado_pago = upper(trim(estado_pago))) ~> limpiarEstadoPago",
 				"limpiarEstadoPago sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['pagos_limpio.csv'],",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sinkSilverPagos"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSilverPagos"
 			]
 		}
 	}
