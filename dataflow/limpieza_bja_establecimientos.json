@@ -47,8 +47,11 @@
 				"limpiezaEstablecimientosBJA derive(estado = upper(trim(estado))) ~> limpiarEstado",
 				"limpiarEstado sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['establecimientos_limpio.csv'],",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sinkSilverEstablecimientosBJA"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSilverEstablecimientosBJA"
 			]
 		}
 	}
