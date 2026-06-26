@@ -61,8 +61,11 @@
 				"          peso_paquete_kg_calidad = iif(isNull(peso_paquete_kg), 'SIN_PESO_REGISTRADO', 'OK')) ~> limpiarNulos",
 				"limpiarNulos sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     partitionFileNames:['entregas_limpio.csv'],",
+				"     truncate: true,",
 				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> sinkSilverEntregas"
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sinkSilverEntregas"
 			]
 		}
 	}
