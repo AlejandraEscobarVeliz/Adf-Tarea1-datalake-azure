@@ -1,0 +1,37 @@
+{
+	"name": "limpieza_bja_inscripciones",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bja_inscripciones",
+						"type": "DatasetReference"
+					},
+					"name": "limpiezaInscripcionesBJA"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "limpiarCIpaso1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          inscripcion_id as string,",
+				"          ci_beneficiaria as string,",
+				"          establecimiento_id as string,",
+				"          fecha_inscripcion as string,",
+				"          semana_gestacion as string,",
+				"          estado as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> limpiezaInscripcionesBJA",
+				"limpiezaInscripcionesBJA derive() ~> limpiarCIpaso1"
+			]
+		}
+	}
+}
