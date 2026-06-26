@@ -1,19 +1,16 @@
 {
-	"name": "gold_dim_establecimiento_bja",
+	"name": "gold_hechos_entrega",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_dw_subsidios_gold",
 			"type": "LinkedServiceReference"
-		},
-		"folder": {
-			"name": "Golden/BJA"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "dim_establecimiento_bja"
+			"table": "hechos_entrega"
 		}
 	}
 }
